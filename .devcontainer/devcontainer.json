@@ -7,7 +7,6 @@
   },
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {},
-    "ghcr.io/github/features/goproxy:1": {},
     "ghcr.io/devcontainers/features/sshd:1": {
       "version": "latest"
     }
