@@ -118,29 +118,11 @@ func main() {
 
 				client.Debugf("Slash command received: %+v", cmd)
 
-				// payload := map[string]interface{}{
-				// 	"blocks": []slack.Block{
-				// 		slack.NewSectionBlock(
-				// 			&slack.TextBlockObject{
-				// 				Type: slack.MarkdownType,
-				// 				Text: "foo",
-				// 			},
-				// 			nil,
-				// 			slack.NewAccessory(
-				// 				slack.NewButtonBlockElement(
-				// 					"",
-				// 					"somevalue",
-				// 					&slack.TextBlockObject{
-				// 						Type: slack.PlainTextType,
-				// 						Text: "bar",
-				// 					},
-				// 				),
-				// 			),
-				// 		),
-				// 	},
-				// }
+				payload := map[string]interface{}{
+					"text": "hello world",
+				}
 
-				client.Ack(*evt.Request, )
+				client.Ack(*evt.Request, payload)
 			case socketmode.EventTypeHello:
 				client.Debugf("Hello received!")
 			default:
