@@ -123,6 +123,44 @@ func main() {
 				}
 
 				client.Ack(*evt.Request, payload)
+				// check if an argument is passed
+				if len(cmd.Text) > 0 {
+					// check if the argument is a user
+					if strings.HasPrefix(cmd.Text, "@") {
+						userName := strings.TrimPrefix(cmd.Text, "@")
+						// find the userId from the user name
+						users, err := api.GetUsers()
+						if err != nil {
+							fmt.Printf("failed getting users: %v", err)
+							return
+						}
+						var user slack.User
+						for _, foundUser := range users {
+							if foundUser.Name == userName {
+								user = foundUser
+								break
+							}
+						}
+						_, _, err = client.PostMessage(cmd.ChannelID, slack.MsgOptionText(fmt.Sprintf("Hello %s!", user.Name), false))
+						if err != nil {
+							fmt.Printf("failed posting message: %v", err)
+						}
+						convoParams := slack.OpenConversationParameters{
+							Users: []string{user.ID},
+						}
+						channel, _, _, _ := client.OpenConversation(&convoParams)
+						_, _, err = client.PostMessage(channel.ID, slack.MsgOptionText("Hello Jon!", false))
+						if err != nil {
+							fmt.Printf("failed posting message: %v", err)
+						}
+					} else {
+						_, _, err := client.PostMessage(cmd.ChannelID, slack.MsgOptionText(fmt.Sprintf("Hello %s!", cmd.Text), false))
+						if err != nil {
+							fmt.Printf("failed posting message: %v", err)
+						}
+					}
+				}
+				// if arg passed, lookup the user
 			case socketmode.EventTypeHello:
 				client.Debugf("Hello received!")
 			default:
