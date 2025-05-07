@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
 	"os"
@@ -97,8 +98,17 @@ func main() {
 				switch callback.Type {
 				case slack.InteractionTypeBlockActions:
 					// See https://api.slack.com/apis/connections/socket-implement#button
+				// get the button action from the callback
+					actionCallback := callback.ActionCallback.BlockActions[0]
+					// get the user name from the callback
+					userName := callback.User.Name
 
-					client.Debugf("button clicked!")
+					client.Debugf("button clicked: %s, %s", actionCallback.Value, userName)
+					payload = map[string]interface{}{
+						"text": "thank you world",
+					}
+					client.Ack(*evt.Request, payload)
+
 				case slack.InteractionTypeShortcut:
 				case slack.InteractionTypeViewSubmission:
 					// See https://api.slack.com/apis/connections/socket-implement#modal
@@ -106,6 +116,7 @@ func main() {
 				default:
 
 				}
+				
 
 				client.Ack(*evt.Request, payload)
 			case socketmode.EventTypeSlashCommand:
@@ -145,14 +156,8 @@ func main() {
 						if err != nil {
 							fmt.Printf("failed posting message: %v", err)
 						}
-						convoParams := slack.OpenConversationParameters{
-							Users: []string{user.ID},
-						}
-						channel, _, _, _ := client.OpenConversation(&convoParams)
-						_, _, err = client.PostMessage(channel.ID, slack.MsgOptionText("Hello Jon!", false))
-						if err != nil {
-							fmt.Printf("failed posting message: %v", err)
-						}
+						sendChallengeDirectMessage(client, user.ID)
+						sendChallengeDirectMessage(client, cmd.UserID)	
 					} else {
 						_, _, err := client.PostMessage(cmd.ChannelID, slack.MsgOptionText(fmt.Sprintf("Hello %s!", cmd.Text), false))
 						if err != nil {
@@ -170,4 +175,19 @@ func main() {
 	}()
 
 	client.Run()
+}
+
+func sendChallengeDirectMessage(client *socketmode.Client, userID string) {
+	convoParams := slack.OpenConversationParameters{
+		Users: []string{userID},
+	}
+	channel, _, _, _ := client.OpenConversation(&convoParams)
+	var challengeBlock slack.Blocks;
+	byteValue, _ := os.ReadFile("challenge.json")
+	json.Unmarshal(byteValue, &challengeBlock);
+	fmt.Printf("challengeBlock: %v", challengeBlock)
+	_, _, err := client.PostMessage(channel.ID, slack.MsgOptionBlocks(challengeBlock.BlockSet...))
+	if err != nil {
+		fmt.Printf("failed posting message: %v", err)
+	}
 }

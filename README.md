@@ -8,7 +8,12 @@ bot announces winner and score in original channel and DMs
 
 ## Todo:
 - ~~bot needs to be able to DM people~~
+- it needs to be able to take inputs via buttons
+    - ~~buttons sent to both users~~
+    - buttons disappear when pressed
+    - ~~choices and user name passed in callback~~
+    - send message acknowledging choice
 - it needs to be able to calculate the winner
 - it needs to be able to store the scores
-- it needs to be able to take inputs via buttons*
+
 

@@ -1,0 +1,45 @@
+[
+    {
+        "type": "section",
+        "text": {
+            "type": "plain_text",
+            "text": "You have been challenged by Adam 🤺, Make your choice:",
+            "emoji": true
+        }
+    },
+    {
+        "type": "actions",
+        "elements": [
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "🪨 Rock",
+                    "emoji": true
+                },
+                "value": "rock",
+                "action_id": "rock"
+            },
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "📄 Paper",
+                    "emoji": true
+                },
+                "value": "paper",
+                "action_id": "paper"
+            },
+            {
+                "type": "button",
+                "text": {
+                    "type": "plain_text",
+                    "text": "✂️ Scissors",
+                    "emoji": true
+                },
+                "value": "scissors",
+                "action_id": "scissors"
+            }
+        ]
+    }
+]
