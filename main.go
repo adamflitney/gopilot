@@ -108,6 +108,11 @@ func main() {
 						"text": "thank you world",
 					}
 					client.Ack(*evt.Request, payload)
+					// update the interacted message to replace the buttons with text
+					_, _, err := client.PostMessage(callback.Channel.ID, slack.MsgOptionText(fmt.Sprintf("Thank you %s!", userName), false), slack.MsgOptionReplaceOriginal(callback.ResponseURL))
+					if err != nil {
+						fmt.Printf("failed posting message: %v", err)
+					}
 
 				case slack.InteractionTypeShortcut:
 				case slack.InteractionTypeViewSubmission:
