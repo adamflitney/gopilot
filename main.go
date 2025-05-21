@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"gopilot/rockpaperscissors"
 	"log"
 	"os"
 	"strings"
@@ -66,20 +67,6 @@ func main() {
 	client.Run()
 }
 
-func sendChallengeDirectMessage(client *socketmode.Client, userID string) {
-	convoParams := slack.OpenConversationParameters{
-		Users: []string{userID},
-	}
-	channel, _, _, _ := client.OpenConversation(&convoParams)
-	var challengeBlock slack.Blocks
-	byteValue, _ := os.ReadFile("challenge.json")
-	json.Unmarshal(byteValue, &challengeBlock)
-	fmt.Printf("challengeBlock: %v", challengeBlock)
-	_, _, err := client.PostMessage(channel.ID, slack.MsgOptionBlocks(challengeBlock.BlockSet...))
-	if err != nil {
-		fmt.Printf("failed posting message: %v", err)
-	}
-}
 func processInteractionEvent(client *socketmode.Client, evt socketmode.Event) {
 	callback, ok := evt.Data.(slack.InteractionCallback)
 	if !ok {
@@ -125,6 +112,12 @@ func processSlashCommand(api *slack.Client, client *socketmode.Client, evt socke
 	}
 
 	client.Ack(*evt.Request, payload)
+
+	game := new(rockpaperscissors.RockPaperScissors)
+	messenger := new(SlackMessenger)
+	messenger.client = client
+	game
+
 	// check if an argument is passed
 	if len(cmd.Text) > 0 {
 		// check if the argument is a user
@@ -143,10 +136,7 @@ func processSlashCommand(api *slack.Client, client *socketmode.Client, evt socke
 					break
 				}
 			}
-			_, _, err = client.PostMessage(cmd.ChannelID, slack.MsgOptionText(fmt.Sprintf("Hello %s!", user.Name), false))
-			if err != nil {
-				fmt.Printf("failed posting message: %v", err)
-			}
+			game.StartGame(api, cmd.UserID, user.ID)
 			sendChallengeDirectMessage(client, user.ID)
 			sendChallengeDirectMessage(client, cmd.UserID)
 		} else {
@@ -155,5 +145,23 @@ func processSlashCommand(api *slack.Client, client *socketmode.Client, evt socke
 				fmt.Printf("failed posting message: %v", err)
 			}
 		}
+	}
+}
+
+type SlackMessenger struct {
+	client *socketmode.Client
+}
+
+func (sm *SlackMessenger) sendBlockDirectMessage(client *socketmode.Client, userID string, filename string) {
+	convoParams := slack.OpenConversationParameters{
+		Users: []string{userID},
+	}
+	channel, _, _, _ := sm.client.OpenConversation(&convoParams)
+	var messageBlock slack.Blocks
+	byteValue, _ := os.ReadFile(filename)
+	json.Unmarshal(byteValue, &messageBlock)
+	_, _, err := sm.client.PostMessage(channel.ID, slack.MsgOptionBlocks(messageBlock.BlockSet...))
+	if err != nil {
+		fmt.Printf("failed posting message: %v", err)
 	}
 }
