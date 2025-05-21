@@ -16,6 +16,9 @@ bot announces winner and score in original channel and DMs
 - it needs to be able to calculate the winner
 - it needs to be able to store the scores
 
+- where/how to deploy?
+- pipeline to build/deploy?
+
 game (engine?) - handle state
 - start method - message both players
 - saveResponse - take the response from each player

@@ -13,6 +13,7 @@ import (
 )
 
 func main() {
+	// connect to slack API
 	appToken := os.Getenv("SLACK_APP_TOKEN")
 	if appToken == "" {
 		fmt.Fprintf(os.Stderr, "SLACK_APP_TOKEN must be set.\n")
@@ -46,6 +47,7 @@ func main() {
 		socketmode.OptionLog(log.New(os.Stdout, "socketmode: ", log.Lshortfile|log.LstdFlags)),
 	)
 
+	// listen to events from slack client
 	go func() {
 		for evt := range client.Events {
 			switch evt.Type {
