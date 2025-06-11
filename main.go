@@ -86,6 +86,7 @@ func processInteractionEvent(client *socketmode.Client, evt socketmode.Event) {
 		actionCallback := callback.ActionCallback.BlockActions[0]
 		// get the user name from the callback
 		userName := callback.User.Name
+		userId := callback.User.ID
 
 		client.Debugf("button clicked: %s, %s", actionCallback.Value, userName)
 		payload = map[string]interface{}{
@@ -96,7 +97,7 @@ func processInteractionEvent(client *socketmode.Client, evt socketmode.Event) {
 		if err != nil {
 			fmt.Printf("failed posting message: %v", err)
 		}
-		game.SaveResponse(userName, actionCallback.Value)
+		game.SaveResponse(userId, actionCallback.Value)
 	}
 	client.Ack(*evt.Request, payload)
 }
@@ -137,7 +138,8 @@ func processSlashCommand(api *slack.Client, client *socketmode.Client, evt socke
 					break
 				}
 			}
-			game.StartGame(api, cmd.UserID, user.ID)
+			game.StartGame(cmd.ChannelID, cmd.UserID, user.ID)
+
 		} else {
 			_, _, err := client.PostMessage(cmd.ChannelID, slack.MsgOptionText(fmt.Sprintf("Hello %s!", cmd.Text), false))
 			if err != nil {

@@ -5,8 +5,6 @@ import (
 	"gopilot/slackmessenger"
 	"maps"
 	"slices"
-
-	"github.com/slack-go/slack"
 )
 
 // a struct to hold the game state and the methods to play the game
@@ -25,8 +23,9 @@ func NewRockPaperScissors(messenger *slackmessenger.SlackMessenger) *RockPaperSc
 }
 
 // a method to start the game
-func (r *RockPaperScissors) StartGame(api *slack.Client, challenger string, challengee string) {
+func (r *RockPaperScissors) StartGame(channelID string, challenger string, challengee string) {
 	// send message to each player
+	r.channelId = channelID
 
 	err := r.messenger.SendBlockDirectMessage(challengee, "rockpaperscissors/challenge.json")
 	if err != nil {
@@ -57,7 +56,9 @@ func (r *RockPaperScissors) determineWinner() {
 	// Determine winner based on rock-paper-scissors rules
 	if r.responses[players[0]] == r.responses[players[1]] {
 		// It's a tie
-		//r.messenger.SendMessage(r.channelId, "It's a tie!")
+		r.messenger.SendMessage(r.channelId, "rockpaperscissors/draw.json")
+		r.messenger.SendBlockDirectMessage(players[0], "rockpaperscissors/draw.json")
+		r.messenger.SendBlockDirectMessage(players[1], "rockpaperscissors/draw.json")
 		return
 	}
 
@@ -72,7 +73,7 @@ func (r *RockPaperScissors) determineWinner() {
 		winner = players[1]
 		loser = players[0]
 	}
-
+	r.messenger.SendMessage(r.channelId, "rockpaperscissors/winner.json")
 	r.messenger.SendBlockDirectMessage(winner, "rockpaperscissors/winner.json")
-	r.messenger.SendBlockDirectMessage(loser, "rockpaperscissors/winner.json")
+	r.messenger.SendBlockDirectMessage(loser, "rockpaperscissors/loser.json")
 }
