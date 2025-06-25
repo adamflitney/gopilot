@@ -3,7 +3,7 @@
         "type": "section",
         "text": {
             "type": "plain_text",
-            "text": "You have been challenged by Adam 🤺, Make your choice:",
+            "text": "You have been challenged by {{.Name}} 🤺, Make your choice:",
             "emoji": true
         }
     },

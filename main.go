@@ -131,14 +131,32 @@ func processSlashCommand(api *slack.Client, client *socketmode.Client, evt socke
 				fmt.Printf("failed getting users: %v", err)
 				return
 			}
-			var user slack.User
+			var challengee slack.User
 			for _, foundUser := range users {
 				if foundUser.Name == userName {
-					user = foundUser
+					challengee = foundUser
 					break
 				}
 			}
-			game.StartGame(cmd.ChannelID, cmd.UserID, user.ID)
+			challengeePlayer := rockpaperscissors.Player{
+				ID:     challengee.ID,
+				Handle: challengee.Name,
+				Name:   challengee.RealName,
+			}
+			// loop through users match where .Name == cmd.UserName
+			var challenger slack.User
+			for _, foundUser := range users {
+				if foundUser.Name == cmd.UserName {
+					challenger = foundUser
+					break
+				}
+			}
+			challengerPlayer := rockpaperscissors.Player{
+				ID:     challenger.ID,
+				Handle: challenger.Name,
+				Name:   challenger.RealName,
+			}
+			game.StartGame(cmd.ChannelID, challengerPlayer, challengeePlayer)
 
 		} else {
 			_, _, err := client.PostMessage(cmd.ChannelID, slack.MsgOptionText(fmt.Sprintf("Hello %s!", cmd.Text), false))

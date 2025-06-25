@@ -1,0 +1,10 @@
+[
+    {
+        "type": "section",
+        "text": {
+            "type": "plain_text",
+            "text": "{{.Winner}} has beaten {{.Loser}} at rock, paper, scissors!!!",
+            "emoji": true
+        }
+    }
+]
